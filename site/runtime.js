@@ -15,7 +15,17 @@
   // Office.js is loaded before this file in Outlook. Register the event handler
   // directly so a missing/late conditional check cannot silently skip activation.
   if (!isCommonJs) {
+    var isEventRuntime = root.location && /\/runtime\.html$/.test(root.location.pathname);
+
+    if (isEventRuntime) {
+      api.recordDiagnostic("runtime-loaded", "Event runtime JavaScript se je naložil.");
+    }
+
     Office.actions.associate("applyBdevSignature", api.handleComposeEvent);
+
+    if (isEventRuntime) {
+      api.recordDiagnostic("handler-associated", "Handler applyBdevSignature je registriran.");
+    }
   }
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
@@ -30,6 +40,50 @@
     email: "danijel@bubinjo.dev",
     website: "https://bubinjo.dev"
   };
+
+  var DIAGNOSTIC_KEY = "bdev-signature-event-diagnostic-v1";
+
+  function recordDiagnostic(stage, detail) {
+    try {
+      if (typeof localStorage === "undefined") {
+        return;
+      }
+
+      localStorage.setItem(
+        DIAGNOSTIC_KEY,
+        JSON.stringify({
+          stage: stage,
+          detail: detail || "",
+          timestamp: new Date().toISOString()
+        })
+      );
+    } catch (error) {
+      // Diagnostics must never interrupt signature insertion.
+    }
+  }
+
+  function getDiagnostic() {
+    try {
+      if (typeof localStorage === "undefined") {
+        return null;
+      }
+
+      var value = localStorage.getItem(DIAGNOSTIC_KEY);
+      return value ? JSON.parse(value) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function clearDiagnostic() {
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.removeItem(DIAGNOSTIC_KEY);
+      }
+    } catch (error) {
+      // Ignore unavailable browser storage.
+    }
+  }
 
   function escapeHtml(value) {
     return String(value || "")
@@ -155,6 +209,8 @@
   function handleComposeEvent(event) {
     var completed = false;
 
+    recordDiagnostic("event-invoked", "Outlook je sprožil OnNewMessageCompose.");
+
     function finish() {
       if (!completed) {
         completed = true;
@@ -164,12 +220,18 @@
 
     try {
       insertForCurrentItem(function (error) {
-        if (error && typeof console !== "undefined") {
-          console.error("B.DEV signature:", error);
+        if (error) {
+          recordDiagnostic("signature-error", error.message || String(error));
+          if (typeof console !== "undefined") {
+            console.error("B.DEV signature:", error);
+          }
+        } else {
+          recordDiagnostic("signature-success", "Podpis je bil samodejno vstavljen.");
         }
         finish();
       });
     } catch (error) {
+      recordDiagnostic("handler-error", error.message || String(error));
       if (typeof console !== "undefined") {
         console.error("B.DEV signature:", error);
       }
@@ -180,8 +242,11 @@
   return {
     POC_PROFILE: POC_PROFILE,
     buildSignatureHtml: buildSignatureHtml,
+    clearDiagnostic: clearDiagnostic,
     escapeHtml: escapeHtml,
+    getDiagnostic: getDiagnostic,
     handleComposeEvent: handleComposeEvent,
-    insertForCurrentItem: insertForCurrentItem
+    insertForCurrentItem: insertForCurrentItem,
+    recordDiagnostic: recordDiagnostic
   };
 });

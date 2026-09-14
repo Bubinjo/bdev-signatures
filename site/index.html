@@ -16,6 +16,10 @@
       button { border: 0; border-radius: 7px; background: #2f9c95; color: white; padding: 10px 14px; font-weight: 700; cursor: pointer; }
       button:disabled { opacity: .55; cursor: wait; }
       #status { min-height: 20px; margin-top: 12px; font-size: 13px; }
+      .diagnostic { margin-top: 18px; padding: 14px; background: #eef3f4; border-radius: 8px; }
+      .diagnostic h2 { margin: 0 0 8px; font-size: 14px; }
+      .diagnostic pre { margin: 10px 0 0; white-space: pre-wrap; font: 12px/1.45 Consolas, monospace; }
+      .diagnostic button { padding: 7px 10px; font-size: 12px; }
       .note { margin-top: 18px; padding-top: 14px; border-top: 1px solid #e5eaec; font-size: 12px; }
     </style>
   </head>
@@ -26,6 +30,11 @@
         <p>PoC v0.1 uporablja statične testne podatke. Ob odprtju novega sporočila mora Outlook podpis vstaviti samodejno.</p>
         <button id="apply" type="button">Ročno vstavi testni podpis</button>
         <div id="status" role="status" aria-live="polite"></div>
+        <div class="diagnostic">
+          <h2>Diagnostika samodejnega zagona</h2>
+          <button id="refresh-diagnostic" type="button">Osveži diagnostiko</button>
+          <pre id="diagnostic-output">Preverjam …</pre>
+        </div>
         <p class="note">V naslednji fazi bo statični profil zamenjan z uporabniškimi atributi iz Microsoft Entra ID prek Microsoft Grapha.</p>
       </section>
     </main>
@@ -33,6 +42,18 @@
       Office.onReady(function () {
         var button = document.getElementById("apply");
         var status = document.getElementById("status");
+        var diagnosticButton = document.getElementById("refresh-diagnostic");
+        var diagnosticOutput = document.getElementById("diagnostic-output");
+
+        function renderDiagnostic() {
+          var diagnostic = BdevSignature.getDiagnostic();
+          diagnosticOutput.textContent = diagnostic
+            ? "Faza: " + diagnostic.stage + "\nČas: " + diagnostic.timestamp + "\nPodrobnost: " + diagnostic.detail
+            : "Ni diagnostičnega zapisa. Event runtime se v tej seji še ni naložil.";
+        }
+
+        renderDiagnostic();
+        diagnosticButton.addEventListener("click", renderDiagnostic);
 
         button.addEventListener("click", function () {
           button.disabled = true;
