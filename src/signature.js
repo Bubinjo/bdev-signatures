@@ -2,7 +2,8 @@
 
 const ORGANIZATION = {
   company: "B.DEV d.o.o.",
-  website: "https://bubinjo.dev"
+  website: "https://bubinjo.dev",
+  logoUrl: "https://bubinjo.github.io/bdev-signatures/assets/icon-128.png"
 };
 
 const FALLBACK_PROFILE = {
@@ -49,66 +50,94 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-function line(label, value) {
-  if (!value) return "";
-
-  return (
-    '<tr><td style="padding:1px 0;color:#58616b;white-space:nowrap;">' +
-    escapeHtml(label) +
-    '</td><td style="padding:1px 0 1px 8px;color:#1f2933;">' +
-    escapeHtml(value) +
-    "</td></tr>"
-  );
-}
-
-function linkedLine(label, value, href) {
+function linkedContact(label, value, href) {
   if (!value || !href) return "";
 
   return (
-    '<tr><td style="padding:1px 0;color:#58616b;white-space:nowrap;">' +
+    "<tr>" +
+    '<td style="padding:1px 8px 1px 0;color:#2f9c95;font:700 11px Arial,sans-serif;vertical-align:top;">' +
     escapeHtml(label) +
-    '</td><td style="padding:1px 0 1px 8px;">' +
-    '<a style="color:#167d78;text-decoration:none;" href="' +
+    "</td>" +
+    '<td style="padding:1px 0;font:12px Arial,sans-serif;vertical-align:top;">' +
+    '<a href="' +
     escapeHtml(href) +
-    '">' +
+    '" style="color:#34434c;text-decoration:none;">' +
     escapeHtml(value) +
     "</a></td></tr>"
+  );
+}
+
+function phoneHref(value) {
+  return value ? "tel:" + String(value).replace(/[^\d+]/g, "") : "";
+}
+
+function roleHtml(data) {
+  const roleParts = [data.jobTitle, data.department].filter(Boolean);
+  if (!roleParts.length) return "";
+
+  return (
+    '<div style="margin-top:2px;color:#2f9c95;font:700 12px Arial,sans-serif;">' +
+    roleParts.map(escapeHtml).join(" &nbsp;·&nbsp; ") +
+    "</div>"
+  );
+}
+
+function buildCompactSignature(data) {
+  return (
+    '<table data-bdev-signature="compact-v1" role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:12px;border-collapse:collapse;font-family:Arial,sans-serif;">' +
+    "<tr>" +
+    '<td style="border-left:3px solid #40c9a2;padding:1px 0 1px 11px;">' +
+    '<div style="color:#16222a;font:700 14px Arial,sans-serif;">' +
+    escapeHtml(data.displayName) +
+    "</div>" +
+    roleHtml(data) +
+    '<div style="margin-top:2px;color:#664147;font:700 11px Arial,sans-serif;">' +
+    escapeHtml(data.company) +
+    "</div>" +
+    "</td></tr></table>"
+  );
+}
+
+function buildFullSignature(data) {
+  const websiteLabel = data.website ? data.website.replace(/^https?:\/\//, "").replace(/\/$/, "") : "";
+  const details =
+    linkedContact("T", data.businessPhone, phoneHref(data.businessPhone)) +
+    linkedContact("M", data.mobilePhone, phoneHref(data.mobilePhone)) +
+    linkedContact("E", data.email, data.email ? "mailto:" + data.email : "") +
+    linkedContact("W", websiteLabel, data.website);
+
+  return (
+    '<table data-bdev-signature="full-v1" role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:14px;border-collapse:collapse;font-family:Arial,sans-serif;">' +
+    "<tr>" +
+    '<td style="padding:2px 16px 2px 0;vertical-align:top;">' +
+    '<a href="' +
+    escapeHtml(data.website || ORGANIZATION.website) +
+    '" style="text-decoration:none;">' +
+    '<img src="' +
+    escapeHtml(ORGANIZATION.logoUrl) +
+    '" width="68" height="68" alt="B.DEV" style="display:block;width:68px;height:68px;border:0;border-radius:13px;" />' +
+    "</a></td>" +
+    '<td style="border-left:3px solid #40c9a2;padding:1px 0 1px 16px;vertical-align:top;">' +
+    '<div style="color:#16222a;font:700 17px Arial,sans-serif;line-height:21px;">' +
+    escapeHtml(data.displayName) +
+    "</div>" +
+    roleHtml(data) +
+    '<div style="margin-top:5px;color:#664147;font:700 11px Arial,sans-serif;letter-spacing:.3px;">' +
+    escapeHtml(data.company) +
+    "</div>" +
+    (details
+      ? '<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:7px;border-collapse:collapse;">' +
+        details +
+        "</table>"
+      : "") +
+    "</td></tr></table>"
   );
 }
 
 function buildSignatureHtml(composeType, profile) {
   const data = profile || FALLBACK_PROFILE;
   const compact = composeType === "reply" || composeType === "forward";
-  let details = "";
-
-  if (!compact) {
-    details =
-      '<table role="presentation" cellspacing="0" cellpadding="0" style="margin-top:8px;font:12px Arial,sans-serif;border-collapse:collapse;">' +
-      line("T", data.businessPhone) +
-      line("M", data.mobilePhone) +
-      linkedLine("E", data.email, data.email ? "mailto:" + data.email : "") +
-      linkedLine("W", data.website ? data.website.replace(/^https?:\/\//, "") : "", data.website) +
-      "</table>";
-  }
-
-  const roleParts = [data.jobTitle, data.department].filter(Boolean);
-
-  return (
-    '<div data-bdev-signature="dynamic-v2" style="font-family:Arial,sans-serif;color:#1f2933;line-height:1.35;">' +
-    '<div style="height:12px;line-height:12px;">&nbsp;</div>' +
-    '<div style="border-left:4px solid #2f9c95;padding-left:12px;">' +
-    '<div style="font-size:15px;font-weight:700;color:#16222a;">' +
-    escapeHtml(data.displayName) +
-    "</div>" +
-    (roleParts.length
-      ? '<div style="font-size:12px;color:#58616b;">' + roleParts.map(escapeHtml).join(" · ") + "</div>"
-      : "") +
-    '<div style="margin-top:3px;font-size:12px;font-weight:700;color:#167d78;">' +
-    escapeHtml(data.company) +
-    "</div>" +
-    details +
-    "</div></div>"
-  );
+  return compact ? buildCompactSignature(data) : buildFullSignature(data);
 }
 
 module.exports = {

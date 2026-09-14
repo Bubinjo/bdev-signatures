@@ -2,8 +2,8 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const signature = require("../src/signature.js");
 
-test("builds a full signature for new mail", () => {
-  const profile = signature.normalizeGraphProfile({
+function graphProfile() {
+  return signature.normalizeGraphProfile({
     displayName: "Danijel Buba",
     jobTitle: "System Engineer",
     department: "IT",
@@ -12,28 +12,26 @@ test("builds a full signature for new mail", () => {
     mobilePhone: "+386 40 000 000",
     mail: "danijel@bubinjo.dev"
   });
-  const html = signature.buildSignatureHtml("newMail", profile);
+}
+
+test("builds a branded full signature for new mail", () => {
+  const html = signature.buildSignatureHtml("newMail", graphProfile());
 
   assert.match(html, /Danijel Buba/);
   assert.match(html, /System Engineer/);
   assert.match(html, /mailto:danijel@bubinjo\.dev/);
-  assert.match(html, /\+386 40 000 000/);
+  assert.match(html, /tel:\+38640000000/);
+  assert.match(html, /assets\/icon-128\.png/);
+  assert.match(html, /data-bdev-signature="full-v1"/);
 });
 
 test("builds a compact signature for replies", () => {
-  const html = signature.buildSignatureHtml("reply", {
-    displayName: "Danijel Buba",
-    jobTitle: "System Engineer",
-    department: "IT",
-    company: "B.DEV d.o.o.",
-    businessPhone: "+386 1 000 00 00",
-    mobilePhone: "+386 40 000 000",
-    email: "danijel@bubinjo.dev",
-    website: "https://bubinjo.dev"
-  });
+  const html = signature.buildSignatureHtml("reply", graphProfile());
 
   assert.match(html, /Danijel Buba/);
+  assert.match(html, /data-bdev-signature="compact-v1"/);
   assert.doesNotMatch(html, /mailto:/);
+  assert.doesNotMatch(html, /icon-128\.png/);
   assert.doesNotMatch(html, /\+386 40 000 000/);
 });
 
@@ -58,7 +56,8 @@ test("omits optional empty attributes", () => {
   const html = signature.buildSignatureHtml("newMail", {
     displayName: "Test User",
     jobTitle: "Engineer",
-    company: "B.DEV d.o.o."
+    company: "B.DEV d.o.o.",
+    website: "https://bubinjo.dev"
   });
 
   assert.match(html, /Test User/);
@@ -70,7 +69,8 @@ test("escapes directory-sourced values", () => {
   const html = signature.buildSignatureHtml("newMail", {
     displayName: '<img src=x onerror="alert(1)">',
     jobTitle: "Engineer",
-    company: "B.DEV d.o.o."
+    company: "B.DEV d.o.o.",
+    website: "https://bubinjo.dev"
   });
 
   assert.doesNotMatch(html, /<img src=x/);
