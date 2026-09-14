@@ -1,12 +1,18 @@
 {
   "name": "bdev-signatures",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "B.DEV Outlook add-in proof of concept for centrally managed signatures",
+  "description": "B.DEV Outlook add-in for centrally managed dynamic signatures",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test tests/*.test.js && npm run validate",
     "validate": "node scripts/validate-manifest.mjs"
+  },
+  "dependencies": {
+    "@azure/msal-browser": "5.21.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
   },
   "engines": {
     "node": ">=20"

@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 const manifest = await readFile("manifest.xml", "utf8");
 const requiredFragments = [
+  "<Version>0.2.0.0</Version>",
   '<Set Name="Mailbox"',
   'DefaultMinVersion="1.10"',
   'Type="OnNewMessageCompose"',
@@ -19,4 +20,4 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-console.log("Manifest contains the required PoC configuration.");
+console.log("Manifest contains the required v0.2 configuration.");

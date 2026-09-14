@@ -1,69 +1,89 @@
 # B.DEV Signatures
 
-PoC Outlook add-in za centralno upravljan podpis, ki je viden že med pisanjem sporočila.
+Outlook add-in za centralno upravljan podpis, ki je viden že med pisanjem sporočila.
 
-## Kaj vsebuje v0.1
+## Kaj vsebuje v0.2
 
 - event-based aktivacijo `OnNewMessageCompose`,
 - `setSignatureAsync()` za vstavljanje podpisa,
-- polni podpis za nov mail,
-- kompaktni podpis za reply/forward,
-- ročni testni gumb v Outlook task panu,
+- Microsoft Entra ID prijavo z MSAL Nested App Authentication (NAA),
+- Microsoft Graph `/me` profil,
+- polni podpis za nov mail in kompaktni podpis za reply/forward,
+- interaktivno prvo prijavo v Outlook taskpanu,
+- varni minimalni Office fallback, kadar Graph ni dosegljiv,
 - statično gostovanje prek GitHub Pages,
-- teste in GitHub Actions workflow.
+- teste in GitHub Actions deployment.
 
-V tej fazi so podatki namenoma statični. Namen PoC je najprej dokazati zanesljivo aktivacijo in vstavljanje podpisa. Microsoft Graph in Entra ID sta naslednja faza.
+## Dinamična polja
 
-## Arhitektura PoC
+Graph poizvedba bere:
+
+- `displayName`
+- `givenName`
+- `surname`
+- `jobTitle`
+- `department`
+- `companyName`
+- `businessPhones`
+- `mobilePhone`
+- `mail`
+- `userPrincipalName`
+- `officeLocation`
+
+Prazna izbirna polja se v podpisu ne izrišejo. E-pošta uporabi `userPrincipalName`, kadar je `mail` prazen.
+
+## Arhitektura
 
 ```text
 Outlook
   -> OnNewMessageCompose
-  -> GitHub Pages runtime
-  -> applyBdevSignature()
-  -> getComposeTypeAsync()
-  -> full ali compact HTML
+  -> MSAL Nested App Authentication
+  -> Microsoft Graph /me
+  -> dinamični HTML podpis
   -> setSignatureAsync()
 ```
 
-## Lokalna verifikacija
+NAA omogoča neposreden delegiran Graph dostop brez backend API-ja in brez client secreta.
 
-Projekt nima produkcijskih npm odvisnosti.
+## Entra konfiguracija
+
+- Application (client) ID: `9d306768-45da-4299-af5f-c5ca17164d41`
+- Directory (tenant) ID: `ef128b1e-9a0a-4181-88a8-1a08e037fc0a`
+- SPA redirect URI: `brk-multihub://bubinjo.github.io`
+- Delegated Graph permission: `User.Read`
+
+Client ID in tenant ID nista skrivnosti. Client secreta ta projekt ne uporablja.
+
+## Prvi zagon
+
+1. Odpri novo sporočilo v Outlooku.
+2. Odpri **Apps -> B.DEV podpis**.
+3. Klikni **Poveži z Microsoft 365**.
+4. Dokončaj prijavo oziroma soglasje.
+5. Preveri prikazan Entra profil.
+6. Zapri sporočilo in odpri nov **New Mail**.
+7. Diagnostika mora prikazati `signature-success-graph`.
+
+Če Graph še ni avtoriziran, add-in vstavi minimalni podpis iz `Office.context.mailbox.userProfile`, da nikoli ne uporabi podatkov drugega uporabnika.
+
+## Build
 
 ```bash
+npm install
 npm test
 npm run build
 ```
 
-Build pripravi mapo `dist/`, ki jo GitHub Actions objavi na Pages.
+Build z esbuildom združi MSAL in runtime v `dist/runtime.js`, nato GitHub Actions objavi mapo `dist/` na Pages.
 
-## Objava in namestitev
+## Classic Outlook
 
-1. Ustvari GitHub repo `Bubinjo/bdev-signatures` z vejo `main`.
-2. Potisni vsebino tega projekta v repo.
-3. V GitHubu odpri **Settings -> Pages** in kot source izberi **GitHub Actions**.
-4. Po uspešnem workflowu preveri `https://bubinjo.github.io/bdev-signatures/runtime.html`.
-5. Prenesi objavljeni `https://bubinjo.github.io/bdev-signatures/manifest.xml`.
-6. V Microsoft 365 admin centru odpri **Settings -> Integrated apps -> Upload custom apps**.
-7. Naloži manifest in ga za pilot dodeli samo svojemu računu.
-8. Po propagaciji odpri Outlook on the web in ustvari novo sporočilo.
+Classic Outlook pri SSO iz JavaScript event runtimea dodatno zahteva datoteko
+`/.well-known/microsoft-officeaddins-allowed.json` na korenu izvora. GitHub project Pages trenutno gostuje pod
+`/bdev-signatures`, zato je ta korak načrtovan ločeno. Outlook on the web in new Outlook uporabljata HTML event runtime.
 
-Pred preizkusom za pilotni račun začasno izklopi običajen Outlook podpis, sicer se lahko prikažeta dva podpisa.
+## Reference
 
-Podroben postopek je v [PoC test planu](docs/poc-test-plan.md).
-
-## Naslednja faza
-
-- Entra app registration,
-- Microsoft 365 SSO,
-- backend API z OAuth On-Behalf-Of tokom,
-- Microsoft Graph `/me` profil,
-- dinamična polja in obravnava praznih atributov,
-- cache in fallback vedenje.
-
-## Tehnična osnova
-
-Projekt sledi Microsoftovemu vzorcu za Outlook event-based activation in uporablja Mailbox requirement set 1.10:
-
-- <https://learn.microsoft.com/en-us/samples/officedev/office-add-in-samples/outlook-add-in-set-signature/>
-- <https://learn.microsoft.com/en-us/office/dev/add-ins/develop/event-based-activation>
+- <https://github.com/OfficeDev/Office-Add-in-samples/tree/main/Samples/auth/Outlook-Event-SSO-NAA>
+- <https://learn.microsoft.com/office/dev/add-ins/develop/enable-nested-app-authentication-in-your-add-in>
+- <https://learn.microsoft.com/office/dev/add-ins/develop/use-sso-in-event-based-activation>
