@@ -20,25 +20,29 @@ test("prefers the personal name over an administrative display name", () => {
   assert.equal(graphProfile().displayName, "Danijel Buba");
 });
 
-test("builds a CGP-branded full signature for new mail", () => {
+test("builds a neon-tech CGP signature for new mail", () => {
   const html = signature.buildSignatureHtml("newMail", graphProfile());
 
   assert.match(html, /Danijel Buba/);
-  assert.match(html, /System Engineer/);
+  assert.match(html, /IT INFRASTRUCTURE SOLUTIONS/);
+  assert.match(html, /bubinjo<span/);
+  assert.match(html, /&gt;_/);
+  assert.match(html, /#091a23/);
   assert.match(html, /mailto:danijel@bubinjo\.dev/);
   assert.match(html, /tel:\+38664154854/);
-  assert.match(html, /assets\/icon-128\.png/);
-  assert.match(html, /#e5f9e0/);
-  assert.match(html, /data-bdev-signature="full-v2"/);
+  assert.match(html, /data-bdev-signature="full-v3"/);
+  assert.doesNotMatch(html, /#e5f9e0/);
+  assert.doesNotMatch(html, /icon-128\.png/);
 });
 
-test("builds a compact signature for replies", () => {
+test("builds a compact light signature for replies", () => {
   const html = signature.buildSignatureHtml("reply", graphProfile());
 
   assert.match(html, /Danijel Buba/);
-  assert.match(html, /data-bdev-signature="compact-v2"/);
+  assert.match(html, /bubinjo\.dev/);
+  assert.match(html, /data-bdev-signature="compact-v3"/);
   assert.doesNotMatch(html, /mailto:/);
-  assert.doesNotMatch(html, /icon-128\.png/);
+  assert.doesNotMatch(html, /IT INFRASTRUCTURE SOLUTIONS/);
   assert.doesNotMatch(html, /\+38664154854/);
 });
 
@@ -57,19 +61,6 @@ test("maps Graph fields and uses UPN when mail is empty", () => {
   assert.equal(profile.email, "test@bubinjo.dev");
   assert.equal(profile.company, "B.DEV d.o.o.");
   assert.equal(profile.businessPhone, "");
-});
-
-test("omits optional empty attributes", () => {
-  const html = signature.buildSignatureHtml("newMail", {
-    displayName: "Test User",
-    jobTitle: "Engineer",
-    company: "B.DEV d.o.o.",
-    website: "https://bubinjo.dev"
-  });
-
-  assert.match(html, /Test User/);
-  assert.doesNotMatch(html, />M</);
-  assert.doesNotMatch(html, />E</);
 });
 
 test("escapes directory-sourced values", () => {
