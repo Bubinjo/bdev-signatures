@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 
 const manifest = await readFile("manifest.xml", "utf8");
 const requiredFragments = [
-  "<Version>0.2.0.0</Version>",
+  "<Version>0.3.0.0</Version>",
   '<Set Name="Mailbox"',
   'DefaultMinVersion="1.10"',
   'Type="OnNewMessageCompose"',
@@ -10,7 +10,9 @@ const requiredFragments = [
   'resid="AutorunPage"',
   'resid="RuntimeJs"',
   '<Permissions>ReadWriteMailbox</Permissions>',
-  'https://bubinjo.github.io/bdev-signatures/'
+  'index-v3.html',
+  'runtime-v3.html',
+  'runtime-v3.js'
 ];
 
 const missing = requiredFragments.filter((fragment) => !manifest.includes(fragment));
@@ -20,4 +22,4 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-console.log("Manifest contains the required v0.2 configuration.");
+console.log("Manifest contains the required v0.3 cache-busted configuration.");

@@ -20,27 +20,32 @@ test("prefers the personal name over an administrative display name", () => {
   assert.equal(graphProfile().displayName, "Danijel Buba");
 });
 
-test("builds a neon-tech CGP signature for new mail", () => {
+test("builds the Company Branding signature for new mail", () => {
   const html = signature.buildSignatureHtml("newMail", graphProfile());
 
   assert.match(html, /Danijel Buba/);
   assert.match(html, /IT INFRASTRUCTURE SOLUTIONS/);
   assert.match(html, /bubinjo<span/);
-  assert.match(html, /&gt;_/);
-  assert.match(html, /#091a23/);
+  assert.match(html, /bubinjo-dev-square-dark-simplified-240x240\.png/);
+  assert.match(html, /#03163D/);
+  assert.match(html, /#246BFD/);
+  assert.match(html, /#13C8FF/);
+  assert.match(html, /#7048FF/);
   assert.match(html, /mailto:danijel@bubinjo\.dev/);
   assert.match(html, /tel:\+38664154854/);
-  assert.match(html, /data-bdev-signature="full-v3"/);
-  assert.doesNotMatch(html, /#e5f9e0/);
+  assert.match(html, /data-bdev-signature="full-v4"/);
+  assert.doesNotMatch(html, /#e5f9e0/i);
+  assert.doesNotMatch(html, /#36d9c4/i);
   assert.doesNotMatch(html, /icon-128\.png/);
 });
 
-test("builds a compact light signature for replies", () => {
+test("builds a compact branded signature for replies", () => {
   const html = signature.buildSignatureHtml("reply", graphProfile());
 
   assert.match(html, /Danijel Buba/);
-  assert.match(html, /bubinjo\.dev/);
-  assert.match(html, /data-bdev-signature="compact-v3"/);
+  assert.match(html, /bubinjo\.dev|bubinjo<span/);
+  assert.match(html, /#03163D/);
+  assert.match(html, /data-bdev-signature="compact-v4"/);
   assert.doesNotMatch(html, /mailto:/);
   assert.doesNotMatch(html, /IT INFRASTRUCTURE SOLUTIONS/);
   assert.doesNotMatch(html, /\+38664154854/);
