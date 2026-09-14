@@ -4,13 +4,17 @@
 
   var api = factory();
 
-  if (typeof module === "object" && module.exports) {
+  var isCommonJs = typeof module === "object" && module.exports;
+
+  if (isCommonJs) {
     module.exports = api;
   }
 
   root.BdevSignature = api;
 
-  if (root.Office && Office.actions && Office.actions.associate) {
+  // Office.js is loaded before this file in Outlook. Register the event handler
+  // directly so a missing/late conditional check cannot silently skip activation.
+  if (!isCommonJs) {
     Office.actions.associate("applyBdevSignature", api.handleComposeEvent);
   }
 })(typeof self !== "undefined" ? self : this, function () {
