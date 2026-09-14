@@ -20,23 +20,24 @@ test("prefers the personal name over an administrative display name", () => {
   assert.equal(graphProfile().displayName, "Danijel Buba");
 });
 
-test("builds the Company Branding signature for new mail", () => {
+test("builds the refined Company Branding signature for new mail", () => {
   const html = signature.buildSignatureHtml("newMail", graphProfile());
 
   assert.match(html, /Danijel Buba/);
-  assert.match(html, /IT INFRASTRUCTURE SOLUTIONS/);
   assert.match(html, /bubinjo<span/);
-  assert.match(html, /bubinjo-dev-square-dark-simplified-240x240\.png/);
+  assert.match(html, /bdev-terminal-mark-v2-240\.png/);
   assert.match(html, /#03163D/);
   assert.match(html, /#246BFD/);
   assert.match(html, /#13C8FF/);
   assert.match(html, /#7048FF/);
   assert.match(html, /mailto:danijel@bubinjo\.dev/);
   assert.match(html, /tel:\+38664154854/);
-  assert.match(html, /data-bdev-signature="full-v4"/);
+  assert.match(html, /data-bdev-signature="full-v5"/);
   assert.doesNotMatch(html, /#e5f9e0/i);
   assert.doesNotMatch(html, /#36d9c4/i);
   assert.doesNotMatch(html, /icon-128\.png/);
+  assert.doesNotMatch(html, /height="3"/);
+  assert.equal((html.match(/bubinjo<span/g) || []).length, 1);
 });
 
 test("builds a compact branded signature for replies", () => {
@@ -45,9 +46,8 @@ test("builds a compact branded signature for replies", () => {
   assert.match(html, /Danijel Buba/);
   assert.match(html, /bubinjo\.dev|bubinjo<span/);
   assert.match(html, /#03163D/);
-  assert.match(html, /data-bdev-signature="compact-v4"/);
+  assert.match(html, /data-bdev-signature="compact-v5"/);
   assert.doesNotMatch(html, /mailto:/);
-  assert.doesNotMatch(html, /IT INFRASTRUCTURE SOLUTIONS/);
   assert.doesNotMatch(html, /\+38664154854/);
 });
 

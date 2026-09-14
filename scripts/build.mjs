@@ -17,10 +17,14 @@ const buildRuntime = (outfile) =>
     legalComments: "none"
   });
 
-// Keep the legacy filename alive while v0.3 moves Outlook to a cache-busted URL.
-await Promise.all([buildRuntime("dist/runtime.js"), buildRuntime("dist/runtime-v3.js")]);
+// Keep legacy filenames alive while v0.4 moves Outlook to a fresh runtime URL.
+await Promise.all([
+  buildRuntime("dist/runtime.js"),
+  buildRuntime("dist/runtime-v3.js"),
+  buildRuntime("dist/runtime-v4.js")
+]);
 
 await cp("manifest.xml", "dist/manifest.xml");
 await cp("manifest-pilot.xml", "dist/manifest-pilot.xml");
 
-console.log("Built Company Branding v0.3 site in dist/.");
+console.log("Built refined Company Branding v0.4 site in dist/.");
