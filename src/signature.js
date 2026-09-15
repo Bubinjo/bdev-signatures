@@ -1,10 +1,13 @@
 "use strict";
 
+const ASSET_ROOT = "https://bubinjo.github.io/bdev-signatures/assets";
+
 const ORGANIZATION = {
   company: "B.DEV d.o.o.",
   website: "https://bubinjo.dev",
-  logoUrl:
-    "https://bubinjo.github.io/bdev-signatures/assets/bdev-terminal-mark-v2-240.png"
+  identityUrl: ASSET_ROOT + "/bdev-signature-identity-v1.png?v=0.5.0",
+  infoBackgroundUrl: ASSET_ROOT + "/bdev-signature-info-bg-v1.jpg?v=0.5.0",
+  artworkUrl: ASSET_ROOT + "/bdev-signature-artwork-v1.png?v=0.5.0"
 };
 
 const BRAND = {
@@ -14,7 +17,6 @@ const BRAND = {
   blue: "#246BFD",
   cyan: "#13C8FF",
   violet: "#7048FF",
-  magenta: "#C04BFF",
   white: "#F7FAFF",
   muted: "#AEC4E8",
   mutedStrong: "#D7E5FA"
@@ -72,8 +74,15 @@ function phoneHref(value) {
   return value ? "tel:" + String(value).replace(/[^\d+]/g, "") : "";
 }
 
-function roleText(data) {
-  return [data.jobTitle, data.department].filter(Boolean);
+function websiteHref(value) {
+  const candidate = valueOrEmpty(value);
+  return /^https?:\/\//i.test(candidate) ? candidate : ORGANIZATION.website;
+}
+
+function websiteLabel(value) {
+  return valueOrEmpty(value)
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/$/, "");
 }
 
 function contactRow(label, value, href) {
@@ -81,9 +90,9 @@ function contactRow(label, value, href) {
 
   return (
     '<tr>' +
-    '<td width="22" style="width:22px;padding:1px 7px 1px 0;color:' +
+    '<td width="19" style="width:19px;padding:1px 5px 1px 0;color:' +
     BRAND.cyan +
-    ';font:700 9px/1.45 Arial,sans-serif;letter-spacing:.8px;vertical-align:top;">' +
+    ';font:700 9px/1.35 Arial,sans-serif;letter-spacing:.6px;vertical-align:top;">' +
     escapeHtml(label) +
     "</td>" +
     '<td style="padding:1px 0;vertical-align:top;">' +
@@ -91,163 +100,138 @@ function contactRow(label, value, href) {
     escapeHtml(href) +
     '" style="color:' +
     BRAND.mutedStrong +
-    ';font:11.5px/1.45 Arial,sans-serif;text-decoration:none;">' +
+    ';font:11px/1.35 Arial,sans-serif;text-decoration:none;">' +
     escapeHtml(value) +
     "</a></td></tr>"
   );
 }
 
 function buildContactRows(data) {
+  const website = websiteHref(data.website);
+
   return [
     contactRow("T", data.businessPhone, phoneHref(data.businessPhone)),
     contactRow("M", data.mobilePhone, phoneHref(data.mobilePhone)),
-    contactRow("E", data.email, data.email ? "mailto:" + data.email : "")
+    contactRow("E", data.email, data.email ? "mailto:" + data.email : ""),
+    contactRow("W", websiteLabel(website), website)
   ]
     .filter(Boolean)
     .join("");
 }
 
-function brandWordmark(data) {
+function compactItem(value, color, weight) {
+  if (!value) return "";
+
   return (
-    '<a href="' +
-    escapeHtml(data.website || ORGANIZATION.website) +
-    '" style="color:' +
-    BRAND.white +
-    ';font:700 13px/1.1 Arial,sans-serif;letter-spacing:-.25px;text-decoration:none;">' +
-    'bubinjo<span style="color:' +
+    '<span style="color:' +
+    color +
+    ";font:" +
+    weight +
+    ' 11px/1.4 Arial,sans-serif;white-space:nowrap;">' +
+    escapeHtml(value) +
+    "</span>"
+  );
+}
+
+function compactSeparator() {
+  return (
+    '<span style="padding:0 6px;color:' +
     BRAND.blue +
-    ';">.dev</span></a>'
+    ';font:700 11px/1.4 Arial,sans-serif;">|</span>'
   );
 }
 
 function buildCompactSignature(data) {
-  const roles = roleText(data);
+  const phone = data.businessPhone || data.mobilePhone;
+  const items = [
+    compactItem(data.displayName, BRAND.navy, "700"),
+    compactItem(data.jobTitle, BRAND.blue, "700"),
+    compactItem(data.company || ORGANIZATION.company, "#415674", "400"),
+    data.email
+      ? '<a href="mailto:' +
+        escapeHtml(data.email) +
+        '" style="color:#415674;font:400 11px/1.4 Arial,sans-serif;text-decoration:none;white-space:nowrap;">' +
+        escapeHtml(data.email) +
+        "</a>"
+      : "",
+    phone
+      ? '<a href="' +
+        escapeHtml(phoneHref(phone)) +
+        '" style="color:#415674;font:400 11px/1.4 Arial,sans-serif;text-decoration:none;white-space:nowrap;">' +
+        escapeHtml(phone) +
+        "</a>"
+      : ""
+  ].filter(Boolean);
 
   return (
-    '<table data-bdev-signature="compact-v5" role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:12px;border-collapse:separate;font-family:Arial,sans-serif;">' +
-    '<tr><td bgcolor="' +
-    BRAND.navy +
-    '" style="background:' +
-    BRAND.navy +
-    ';border-radius:10px;padding:9px 12px;">' +
-    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">' +
-    '<tr><td width="34" style="width:34px;padding:0 10px 0 0;vertical-align:middle;">' +
-    '<img src="' +
-    ORGANIZATION.logoUrl +
-    '" width="34" height="34" alt="B.DEV" style="display:block;width:34px;height:34px;border:0;border-radius:7px;outline:none;" />' +
-    '</td><td style="padding:0;vertical-align:middle;">' +
-    '<div style="color:' +
-    BRAND.white +
-    ';font:700 14px/1.25 Arial,sans-serif;">' +
-    escapeHtml(data.displayName) +
-    "</div>" +
-    (roles.length
-      ? '<div style="margin-top:2px;color:' +
-        BRAND.muted +
-        ';font:11px/1.35 Arial,sans-serif;">' +
-        roles
-          .map(escapeHtml)
-          .join(' <span style="padding:0 4px;color:' + BRAND.cyan + ';">·</span> ') +
-        "</div>"
-      : "") +
-    '<div style="margin-top:3px;">' +
-    brandWordmark(data) +
-    "</div></td></tr>" +
-    '<tr><td colspan="2" style="padding:8px 0 0;">' +
-    '<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;">' +
-    '<tr><td width="34%" height="2" bgcolor="' +
+    '<table data-bdev-signature="compact-v1" role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:12px;border-collapse:collapse;font-family:Arial,sans-serif;">' +
+    '<tr><td width="3" bgcolor="' +
     BRAND.cyan +
-    '" style="height:2px;background:' +
+    '" style="width:3px;background:' +
     BRAND.cyan +
     ';font-size:0;line-height:0;">&nbsp;</td>' +
-    '<td width="33%" height="2" bgcolor="' +
-    BRAND.blue +
-    '" style="height:2px;background:' +
-    BRAND.blue +
-    ';font-size:0;line-height:0;">&nbsp;</td>' +
-    '<td width="33%" height="2" bgcolor="' +
-    BRAND.violet +
-    '" style="height:2px;background:' +
-    BRAND.violet +
-    ';font-size:0;line-height:0;">&nbsp;</td></tr></table>' +
-    "</td></tr></table></td></tr></table>"
+    '<td style="padding:3px 0 3px 9px;">' +
+    items.join(compactSeparator()) +
+    "</td></tr></table>"
   );
 }
 
 function buildFullSignature(data) {
-  const roles = roleText(data);
   const contacts = buildContactRows(data);
 
   return (
-    '<table data-bdev-signature="full-v5" role="presentation" border="0" cellspacing="0" cellpadding="0" width="400" style="width:400px;max-width:100%;margin-top:16px;border-collapse:separate;font-family:Arial,sans-serif;">' +
-    '<tr><td bgcolor="' +
+    '<table data-bdev-signature="full-banner-v2" role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" bgcolor="' +
     BRAND.navy +
-    '" style="background:' +
+    '" style="width:640px;max-width:100%;margin-top:16px;border-collapse:collapse;background:' +
     BRAND.navy +
-    ';background-image:linear-gradient(145deg,' +
-    BRAND.navyDeep +
-    ' 0%,' +
-    BRAND.navy +
-    ' 68%,#082B63 100%);border-radius:13px;overflow:hidden;">' +
-
-    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;border-collapse:collapse;">' +
-    '<tr><td style="padding:16px 18px;">' +
-    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;border-collapse:collapse;">' +
-    '<tr><td width="67" style="width:67px;padding:2px 14px 0 0;vertical-align:top;">' +
+    ';border-radius:12px;overflow:hidden;font-family:Arial,sans-serif;">' +
+    '<tr>' +
+    '<td width="132" height="178" align="left" valign="top" style="width:132px;height:178px;padding:0;vertical-align:top;">' +
+    '<a href="' +
+    escapeHtml(websiteHref(data.website)) +
+    '" style="display:block;text-decoration:none;">' +
     '<img src="' +
-    ORGANIZATION.logoUrl +
-    '" width="62" height="62" alt="B.DEV" style="display:block;width:62px;height:62px;border:0;outline:none;" />' +
-    '</td><td width="1" bgcolor="' +
-    BRAND.blue +
-    '" style="width:1px;background:' +
-    BRAND.blue +
-    ';font-size:0;line-height:0;">&nbsp;</td>' +
-
-    '<td style="padding:0 0 0 15px;vertical-align:top;">' +
-    '<div style="margin-bottom:3px;color:' +
-    BRAND.cyan +
-    ';font:700 8.5px/1.2 Arial,sans-serif;letter-spacing:1.2px;text-transform:uppercase;">' +
-    escapeHtml(data.company || ORGANIZATION.company) +
-    "</div>" +
+    escapeHtml(ORGANIZATION.identityUrl) +
+    '" width="132" height="178" alt="B.DEV" style="display:block;width:132px;height:178px;margin:0;border:0;outline:none;text-decoration:none;" />' +
+    "</a></td>" +
+    '<td width="263" height="178" valign="middle" background="' +
+    escapeHtml(ORGANIZATION.infoBackgroundUrl) +
+    '" bgcolor="' +
+    BRAND.navy +
+    '" style="width:263px;height:178px;padding:0;background-color:' +
+    BRAND.navy +
+    ";background-image:url(" +
+    escapeHtml(ORGANIZATION.infoBackgroundUrl) +
+    ');background-position:left top;background-repeat:no-repeat;vertical-align:middle;">' +
+    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;border-collapse:collapse;">' +
+    '<tr><td style="padding:13px 16px 12px 18px;">' +
     '<div style="color:' +
     BRAND.white +
-    ';font:700 18px/1.2 Arial,sans-serif;letter-spacing:-.25px;">' +
+    ';font:700 20px/1.15 Arial,sans-serif;letter-spacing:-.25px;">' +
     escapeHtml(data.displayName) +
     "</div>" +
-    (roles.length
-      ? '<div style="margin-top:4px;color:' +
-        BRAND.muted +
-        ';font:11.5px/1.4 Arial,sans-serif;">' +
-        roles
-          .map(escapeHtml)
-          .join(' <span style="padding:0 5px;color:' + BRAND.cyan + ';">·</span> ') +
+    (data.jobTitle
+      ? '<div style="margin-top:3px;color:' +
+        BRAND.cyan +
+        ';font:700 12px/1.3 Arial,sans-serif;">' +
+        escapeHtml(data.jobTitle) +
         "</div>"
       : "") +
-    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:8px;border-collapse:collapse;">' +
-    '<tr><td width="22" height="2" bgcolor="' +
-    BRAND.cyan +
-    '" style="width:22px;height:2px;background:' +
-    BRAND.cyan +
-    ';font-size:0;line-height:0;">&nbsp;</td>' +
-    '<td width="28" height="2" bgcolor="' +
-    BRAND.blue +
-    '" style="width:28px;height:2px;background:' +
-    BRAND.blue +
-    ';font-size:0;line-height:0;">&nbsp;</td>' +
-    '<td width="18" height="2" bgcolor="' +
-    BRAND.violet +
-    '" style="width:18px;height:2px;background:' +
-    BRAND.violet +
-    ';font-size:0;line-height:0;">&nbsp;</td></tr></table>' +
-
+    '<div style="margin-top:5px;color:' +
+    BRAND.muted +
+    ';font:400 11px/1.35 Arial,sans-serif;">' +
+    escapeHtml(data.company || ORGANIZATION.company) +
+    "</div>" +
     '<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:7px;border-collapse:collapse;">' +
     contacts +
     "</table>" +
-    '<div style="margin-top:7px;">' +
-    brandWordmark(data) +
-    "</div>" +
-    "</td></tr></table></td></tr></table>" +
-    "</td></tr></table>"
+    "</td></tr></table></td>" +
+    '<td width="245" height="178" align="left" valign="top" style="width:245px;height:178px;padding:0;vertical-align:top;">' +
+    '<img src="' +
+    escapeHtml(ORGANIZATION.artworkUrl) +
+    '" width="245" height="178" alt="B.DEV cloud infrastructure" style="display:block;width:245px;height:178px;margin:0;border:0;outline:none;text-decoration:none;" />' +
+    "</td>" +
+    "</tr></table>"
   );
 }
 
