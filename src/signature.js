@@ -5,9 +5,8 @@ const ASSET_ROOT = "https://bubinjo.github.io/bdev-signatures/assets";
 const ORGANIZATION = {
   company: "B.DEV d.o.o.",
   website: "https://bubinjo.dev",
-  identityUrl: ASSET_ROOT + "/bdev-signature-identity-v2.png?v=0.6.0",
-  infoBackgroundUrl: ASSET_ROOT + "/bdev-signature-info-bg-v2.jpg?v=0.6.0",
-  artworkUrl: ASSET_ROOT + "/bdev-signature-artwork-v2.png?v=0.6.0"
+  backgroundUrl: ASSET_ROOT + "/bdev-signature-background-v1.png?v=0.7.0",
+  logoOverlayUrl: ASSET_ROOT + "/bdev-signature-logo-overlay-v1.png?v=0.7.0"
 };
 
 const BRAND = {
@@ -199,22 +198,33 @@ function buildCompactSignature(data) {
 
 function buildFullSignature(data) {
   const contacts = buildContactRows(data);
+  const backgroundUrl = escapeHtml(ORGANIZATION.backgroundUrl);
 
   return (
-    '<table data-bdev-signature="full-banner-v3" role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" bgcolor="' +
-    BRAND.navy +
-    '" style="width:640px;max-width:100%;margin-top:16px;border-collapse:collapse;background:' +
-    BRAND.navy +
-    ';border-radius:12px;overflow:hidden;font-family:' +
+    '<table data-bdev-signature="full-banner-v6" role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" style="width:640px;max-width:100%;margin-top:16px;border-collapse:collapse;font-family:' +
     FONT_STACK +
     ';">' +
-    '<tr>' +
-    '<td width="129" height="176" align="left" valign="top" style="width:129px;height:176px;padding:0;vertical-align:top;">' +
+    '<tr><td width="640" height="176" valign="top" background="' +
+    backgroundUrl +
+    '" bgcolor="' +
+    BRAND.navy +
+    '" style="width:640px;height:176px;padding:0;background-color:' +
+    BRAND.navy +
+    ';background-image:url(' +
+    backgroundUrl +
+    ');background-position:left top;background-repeat:no-repeat;background-size:640px 176px;border-radius:12px;overflow:hidden;vertical-align:top;">' +
+    '<!--[if gte mso 9]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" arcsize="7%" style="width:480pt;height:132pt;"><v:fill type="frame" src="' +
+    backgroundUrl +
+    '" color="' +
+    BRAND.navy +
+    '" /><v:textbox inset="0,0,0,0"><![endif]-->' +
+    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" height="176" style="width:640px;height:176px;border-collapse:collapse;">' +
+    '<tr><td width="129" height="176" align="left" valign="top" style="width:129px;height:176px;padding:0;vertical-align:top;">' +
     '<a href="' +
     escapeHtml(websiteHref(data.website)) +
     '" style="display:block;text-decoration:none;">' +
     '<img src="' +
-    escapeHtml(ORGANIZATION.identityUrl) +
+    escapeHtml(ORGANIZATION.logoOverlayUrl) +
     '" width="129" height="176" alt="B.DEV" style="display:block;width:129px;height:176px;margin:0;border:0;outline:none;text-decoration:none;" />' +
     "</a></td>" +
     '<td width="1" height="176" valign="middle" bgcolor="' +
@@ -231,15 +241,7 @@ function buildFullSignature(data) {
     ';font-size:0;line-height:0;">&nbsp;</td></tr>' +
     '<tr><td width="1" height="22" style="width:1px;height:22px;font-size:0;line-height:0;">&nbsp;</td></tr>' +
     '</table></td>' +
-    '<td width="290" height="176" valign="top" background="' +
-    escapeHtml(ORGANIZATION.infoBackgroundUrl) +
-    '" bgcolor="' +
-    BRAND.navy +
-    '" style="width:290px;height:176px;padding:0;background-color:' +
-    BRAND.navy +
-    ";background-image:url(" +
-    escapeHtml(ORGANIZATION.infoBackgroundUrl) +
-    ');background-position:left top;background-repeat:no-repeat;vertical-align:top;">' +
+    '<td width="290" height="176" valign="top" style="width:290px;height:176px;padding:0;vertical-align:top;">' +
     '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;border-collapse:collapse;">' +
     '<tr><td style="padding:21px 14px 8px 22px;">' +
     '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;border-collapse:collapse;">' +
@@ -268,14 +270,11 @@ function buildFullSignature(data) {
     "</td></tr></table>" +
     '<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:12px;border-collapse:collapse;">' +
     contacts +
-    "</table>" +
-    "</td></tr></table></td>" +
-    '<td width="220" height="176" align="left" valign="top" style="width:220px;height:176px;padding:0;vertical-align:top;">' +
-    '<img src="' +
-    escapeHtml(ORGANIZATION.artworkUrl) +
-    '" width="220" height="176" alt="B.DEV cloud infrastructure" style="display:block;width:220px;height:176px;margin:0;border:0;outline:none;text-decoration:none;" />' +
-    "</td>" +
-    "</tr></table>"
+    "</table></td></tr></table></td>" +
+    '<td width="220" height="176" style="width:220px;height:176px;padding:0;font-size:0;line-height:0;">&nbsp;</td>' +
+    "</tr></table>" +
+    '<!--[if gte mso 9]></v:textbox></v:roundrect><![endif]-->' +
+    "</td></tr></table>"
   );
 }
 

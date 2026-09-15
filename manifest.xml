@@ -6,7 +6,7 @@
   xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides"
   xsi:type="MailApp">
   <Id>ea512a67-3d77-468d-a271-1744c821db90</Id>
-  <Version>0.6.0.0</Version>
+  <Version>0.7.0.0</Version>
   <ProviderName>B.DEV</ProviderName>
   <DefaultLocale>sl-SI</DefaultLocale>
   <DisplayName DefaultValue="B.DEV Signatures" />
@@ -28,7 +28,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://bubinjo.github.io/bdev-signatures/index-v6.html" />
+        <SourceLocation DefaultValue="https://bubinjo.github.io/bdev-signatures/index-v7.html" />
         <RequestedHeight>250</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -93,9 +93,9 @@
           <bt:Image id="Icon80" DefaultValue="https://bubinjo.github.io/bdev-signatures/assets/icon-80.png" />
         </bt:Images>
         <bt:Urls>
-          <bt:Url id="TaskpaneUrl" DefaultValue="https://bubinjo.github.io/bdev-signatures/index-v6.html" />
-          <bt:Url id="AutorunPage" DefaultValue="https://bubinjo.github.io/bdev-signatures/runtime-v6.html" />
-          <bt:Url id="RuntimeJs" DefaultValue="https://bubinjo.github.io/bdev-signatures/runtime-v6.js" />
+          <bt:Url id="TaskpaneUrl" DefaultValue="https://bubinjo.github.io/bdev-signatures/index-v7.html" />
+          <bt:Url id="AutorunPage" DefaultValue="https://bubinjo.github.io/bdev-signatures/runtime-v7.html" />
+          <bt:Url id="RuntimeJs" DefaultValue="https://bubinjo.github.io/bdev-signatures/runtime-v7.js" />
         </bt:Urls>
         <bt:ShortStrings>
           <bt:String id="GroupLabel" DefaultValue="B.DEV" />

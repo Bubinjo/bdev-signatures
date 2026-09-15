@@ -1,6 +1,6 @@
 {
   "name": "bdev-signatures",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "description": "B.DEV Outlook add-in for centrally managed dynamic signatures",
   "scripts": {
