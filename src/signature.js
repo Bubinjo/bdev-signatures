@@ -5,22 +5,24 @@ const ASSET_ROOT = "https://bubinjo.github.io/bdev-signatures/assets";
 const ORGANIZATION = {
   company: "B.DEV d.o.o.",
   website: "https://bubinjo.dev",
-  identityUrl: ASSET_ROOT + "/bdev-signature-identity-v1.png?v=0.5.0",
-  infoBackgroundUrl: ASSET_ROOT + "/bdev-signature-info-bg-v1.jpg?v=0.5.0",
-  artworkUrl: ASSET_ROOT + "/bdev-signature-artwork-v1.png?v=0.5.0"
+  identityUrl: ASSET_ROOT + "/bdev-signature-identity-v2.png?v=0.6.0",
+  infoBackgroundUrl: ASSET_ROOT + "/bdev-signature-info-bg-v2.jpg?v=0.6.0",
+  artworkUrl: ASSET_ROOT + "/bdev-signature-artwork-v2.png?v=0.6.0"
 };
 
 const BRAND = {
   navy: "#03163D",
-  navyDeep: "#020D2A",
-  navyEdge: "#124B96",
+  navySecondary: "#06245A",
   blue: "#246BFD",
   cyan: "#13C8FF",
   violet: "#7048FF",
-  white: "#F7FAFF",
-  muted: "#AEC4E8",
-  mutedStrong: "#D7E5FA"
+  white: "#FFFFFF",
+  muted: "#AFC4DD",
+  contact: "#EAF4FF",
+  divider: "#2D6FD2"
 };
+
+const FONT_STACK = "'Segoe UI',Arial,sans-serif";
 
 const FALLBACK_PROFILE = {
   displayName: "B.DEV",
@@ -90,17 +92,26 @@ function contactRow(label, value, href) {
 
   return (
     '<tr>' +
-    '<td width="19" style="width:19px;padding:1px 5px 1px 0;color:' +
+    '<td width="17" height="16" style="width:17px;height:16px;padding:0;color:' +
     BRAND.cyan +
-    ';font:700 9px/1.35 Arial,sans-serif;letter-spacing:.6px;vertical-align:top;">' +
+    ";font:700 11px/16px " +
+    FONT_STACK +
+    ';vertical-align:top;">' +
     escapeHtml(label) +
     "</td>" +
-    '<td style="padding:1px 0;vertical-align:top;">' +
+    '<td width="13" height="16" style="width:13px;height:16px;padding:0;color:' +
+    BRAND.divider +
+    ";font:400 11px/16px " +
+    FONT_STACK +
+    ';vertical-align:top;">&#124;</td>' +
+    '<td height="16" style="height:16px;padding:0;vertical-align:top;">' +
     '<a href="' +
     escapeHtml(href) +
     '" style="color:' +
-    BRAND.mutedStrong +
-    ';font:11px/1.35 Arial,sans-serif;text-decoration:none;">' +
+    BRAND.contact +
+    "!important;font:400 11px/16px " +
+    FONT_STACK +
+    ';mso-style-priority:99;text-decoration:none!important;">' +
     escapeHtml(value) +
     "</a></td></tr>"
   );
@@ -108,10 +119,10 @@ function contactRow(label, value, href) {
 
 function buildContactRows(data) {
   const website = websiteHref(data.website);
+  const phone = data.mobilePhone || data.businessPhone;
 
   return [
-    contactRow("T", data.businessPhone, phoneHref(data.businessPhone)),
-    contactRow("M", data.mobilePhone, phoneHref(data.mobilePhone)),
+    contactRow("M", phone, phoneHref(phone)),
     contactRow("E", data.email, data.email ? "mailto:" + data.email : ""),
     contactRow("W", websiteLabel(website), website)
   ]
@@ -127,7 +138,9 @@ function compactItem(value, color, weight) {
     color +
     ";font:" +
     weight +
-    ' 11px/1.4 Arial,sans-serif;white-space:nowrap;">' +
+    " 11px/1.4 " +
+    FONT_STACK +
+    ';white-space:nowrap;">' +
     escapeHtml(value) +
     "</span>"
   );
@@ -137,12 +150,14 @@ function compactSeparator() {
   return (
     '<span style="padding:0 6px;color:' +
     BRAND.blue +
-    ';font:700 11px/1.4 Arial,sans-serif;">|</span>'
+    ";font:700 11px/1.4 " +
+    FONT_STACK +
+    ';">|</span>'
   );
 }
 
 function buildCompactSignature(data) {
-  const phone = data.businessPhone || data.mobilePhone;
+  const phone = data.mobilePhone || data.businessPhone;
   const items = [
     compactItem(data.displayName, BRAND.navy, "700"),
     compactItem(data.jobTitle, BRAND.blue, "700"),
@@ -150,21 +165,27 @@ function buildCompactSignature(data) {
     data.email
       ? '<a href="mailto:' +
         escapeHtml(data.email) +
-        '" style="color:#415674;font:400 11px/1.4 Arial,sans-serif;text-decoration:none;white-space:nowrap;">' +
+        '" style="color:#415674;font:400 11px/1.4 ' +
+        FONT_STACK +
+        ';text-decoration:none;white-space:nowrap;">' +
         escapeHtml(data.email) +
         "</a>"
       : "",
     phone
       ? '<a href="' +
         escapeHtml(phoneHref(phone)) +
-        '" style="color:#415674;font:400 11px/1.4 Arial,sans-serif;text-decoration:none;white-space:nowrap;">' +
+        '" style="color:#415674;font:400 11px/1.4 ' +
+        FONT_STACK +
+        ';text-decoration:none;white-space:nowrap;">' +
         escapeHtml(phone) +
         "</a>"
       : ""
   ].filter(Boolean);
 
   return (
-    '<table data-bdev-signature="compact-v1" role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:12px;border-collapse:collapse;font-family:Arial,sans-serif;">' +
+    '<table data-bdev-signature="compact-v1" role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:12px;border-collapse:collapse;font-family:' +
+    FONT_STACK +
+    ';">' +
     '<tr><td width="3" bgcolor="' +
     BRAND.cyan +
     '" style="width:3px;background:' +
@@ -180,56 +201,79 @@ function buildFullSignature(data) {
   const contacts = buildContactRows(data);
 
   return (
-    '<table data-bdev-signature="full-banner-v2" role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" bgcolor="' +
+    '<table data-bdev-signature="full-banner-v3" role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" bgcolor="' +
     BRAND.navy +
     '" style="width:640px;max-width:100%;margin-top:16px;border-collapse:collapse;background:' +
     BRAND.navy +
-    ';border-radius:12px;overflow:hidden;font-family:Arial,sans-serif;">' +
+    ';border-radius:12px;overflow:hidden;font-family:' +
+    FONT_STACK +
+    ';">' +
     '<tr>' +
-    '<td width="132" height="178" align="left" valign="top" style="width:132px;height:178px;padding:0;vertical-align:top;">' +
+    '<td width="129" height="176" align="left" valign="top" style="width:129px;height:176px;padding:0;vertical-align:top;">' +
     '<a href="' +
     escapeHtml(websiteHref(data.website)) +
     '" style="display:block;text-decoration:none;">' +
     '<img src="' +
     escapeHtml(ORGANIZATION.identityUrl) +
-    '" width="132" height="178" alt="B.DEV" style="display:block;width:132px;height:178px;margin:0;border:0;outline:none;text-decoration:none;" />' +
+    '" width="129" height="176" alt="B.DEV" style="display:block;width:129px;height:176px;margin:0;border:0;outline:none;text-decoration:none;" />' +
     "</a></td>" +
-    '<td width="263" height="178" valign="middle" background="' +
+    '<td width="1" height="176" valign="middle" bgcolor="' +
+    BRAND.navy +
+    '" style="width:1px;height:176px;padding:0;background:' +
+    BRAND.navy +
+    ';vertical-align:middle;">' +
+    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="1" style="width:1px;border-collapse:collapse;">' +
+    '<tr><td width="1" height="22" style="width:1px;height:22px;font-size:0;line-height:0;">&nbsp;</td></tr>' +
+    '<tr><td width="1" height="132" bgcolor="' +
+    BRAND.divider +
+    '" style="width:1px;height:132px;background:' +
+    BRAND.divider +
+    ';font-size:0;line-height:0;">&nbsp;</td></tr>' +
+    '<tr><td width="1" height="22" style="width:1px;height:22px;font-size:0;line-height:0;">&nbsp;</td></tr>' +
+    '</table></td>' +
+    '<td width="290" height="176" valign="top" background="' +
     escapeHtml(ORGANIZATION.infoBackgroundUrl) +
     '" bgcolor="' +
     BRAND.navy +
-    '" style="width:263px;height:178px;padding:0;background-color:' +
+    '" style="width:290px;height:176px;padding:0;background-color:' +
     BRAND.navy +
     ";background-image:url(" +
     escapeHtml(ORGANIZATION.infoBackgroundUrl) +
-    ');background-position:left top;background-repeat:no-repeat;vertical-align:middle;">' +
+    ');background-position:left top;background-repeat:no-repeat;vertical-align:top;">' +
     '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;border-collapse:collapse;">' +
-    '<tr><td style="padding:13px 16px 12px 18px;">' +
-    '<div style="color:' +
+    '<tr><td style="padding:21px 14px 8px 22px;">' +
+    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;border-collapse:collapse;">' +
+    '<tr><td style="padding:0;color:' +
     BRAND.white +
-    ';font:700 20px/1.15 Arial,sans-serif;letter-spacing:-.25px;">' +
+    ";font:700 19px/23px " +
+    FONT_STACK +
+    ';">' +
     escapeHtml(data.displayName) +
-    "</div>" +
+    "</td></tr>" +
     (data.jobTitle
-      ? '<div style="margin-top:3px;color:' +
+      ? '<tr><td style="padding:2px 0 0;color:' +
         BRAND.cyan +
-        ';font:700 12px/1.3 Arial,sans-serif;">' +
+        ";font:600 13px/18px " +
+        FONT_STACK +
+        ';">' +
         escapeHtml(data.jobTitle) +
-        "</div>"
+        "</td></tr>"
       : "") +
-    '<div style="margin-top:5px;color:' +
+    '<tr><td style="padding:2px 0 0;color:' +
     BRAND.muted +
-    ';font:400 11px/1.35 Arial,sans-serif;">' +
+    ";font:400 11px/16px " +
+    FONT_STACK +
+    ';">' +
     escapeHtml(data.company || ORGANIZATION.company) +
-    "</div>" +
-    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:7px;border-collapse:collapse;">' +
+    "</td></tr></table>" +
+    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:12px;border-collapse:collapse;">' +
     contacts +
     "</table>" +
     "</td></tr></table></td>" +
-    '<td width="245" height="178" align="left" valign="top" style="width:245px;height:178px;padding:0;vertical-align:top;">' +
+    '<td width="220" height="176" align="left" valign="top" style="width:220px;height:176px;padding:0;vertical-align:top;">' +
     '<img src="' +
     escapeHtml(ORGANIZATION.artworkUrl) +
-    '" width="245" height="178" alt="B.DEV cloud infrastructure" style="display:block;width:245px;height:178px;margin:0;border:0;outline:none;text-decoration:none;" />' +
+    '" width="220" height="176" alt="B.DEV cloud infrastructure" style="display:block;width:220px;height:176px;margin:0;border:0;outline:none;text-decoration:none;" />' +
     "</td>" +
     "</tr></table>"
   );
