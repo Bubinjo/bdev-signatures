@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 
 const manifest = await readFile("manifest.xml", "utf8");
 const requiredFragments = [
-  "<Version>0.8.0.0</Version>",
+  "<Version>0.8.1.0</Version>",
   '<Set Name="Mailbox"',
   'DefaultMinVersion="1.10"',
   'Type="OnNewMessageCompose"',
@@ -10,9 +10,9 @@ const requiredFragments = [
   'resid="AutorunPage"',
   'resid="RuntimeJs"',
   '<Permissions>ReadWriteMailbox</Permissions>',
-  'index-v8.html',
-  'runtime-v8.html',
-  'runtime-v8.js'
+  'index-v81.html',
+  'runtime-v81.html',
+  'runtime-v81.js'
 ];
 
 const missing = requiredFragments.filter((fragment) => !manifest.includes(fragment));
@@ -22,4 +22,4 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-console.log("Manifest contains the required v0.8 cache-busted configuration.");
+console.log("Manifest contains the required v0.8.1 cache-busted configuration.");

@@ -5,9 +5,9 @@ const ASSET_ROOT = "https://bubinjo.github.io/bdev-signatures/assets";
 const ORGANIZATION = {
   company: "B.DEV d.o.o.",
   website: "https://bubinjo.dev",
-  animatedBackgroundUrl: ASSET_ROOT + "/bdev-signature-background-v2.gif?v=0.8.0",
-  staticBackgroundUrl: ASSET_ROOT + "/bdev-signature-background-v2.png?v=0.8.0",
-  logoOverlayUrl: ASSET_ROOT + "/bdev-signature-logo-overlay-v2.png?v=0.8.0"
+  animatedArtworkUrl: ASSET_ROOT + "/bdev-signature-artwork-v3.gif?v=0.8.1",
+  staticArtworkUrl: ASSET_ROOT + "/bdev-signature-artwork-v3.png?v=0.8.1",
+  logoOverlayUrl: ASSET_ROOT + "/bdev-signature-logo-overlay-v2.png?v=0.8.1"
 };
 
 const BRAND = {
@@ -199,29 +199,22 @@ function buildCompactSignature(data) {
 
 function buildFullSignature(data) {
   const contacts = buildContactRows(data);
-  const animatedBackgroundUrl = escapeHtml(ORGANIZATION.animatedBackgroundUrl);
-  const staticBackgroundUrl = escapeHtml(ORGANIZATION.staticBackgroundUrl);
+  const animatedArtworkUrl = escapeHtml(ORGANIZATION.animatedArtworkUrl);
+  const staticArtworkUrl = escapeHtml(ORGANIZATION.staticArtworkUrl);
 
   return (
-    '<table data-bdev-signature="full-banner-v7" role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" style="width:640px;max-width:100%;margin-top:16px;border-collapse:collapse;font-family:' +
+    '<table data-bdev-signature="full-banner-v81" role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" height="176" bgcolor="' +
+    BRAND.navy +
+    '" style="width:640px;max-width:100%;height:176px;margin-top:16px;border-collapse:collapse;background-color:' +
+    BRAND.navy +
+    ';border-radius:12px;overflow:hidden;font-family:' +
     FONT_STACK +
     ';">' +
-    '<tr><td width="640" height="176" valign="top" background="' +
-    animatedBackgroundUrl +
-    '" bgcolor="' +
+    '<tr><td width="129" height="176" align="left" valign="top" bgcolor="' +
     BRAND.navy +
-    '" style="width:640px;height:176px;padding:0;background-color:' +
+    '" style="width:129px;height:176px;padding:0;background-color:' +
     BRAND.navy +
-    ';background-image:url(' +
-    animatedBackgroundUrl +
-    ');background-position:left top;background-repeat:no-repeat;background-size:640px 176px;border-radius:12px;overflow:hidden;vertical-align:top;">' +
-    '<!--[if gte mso 9]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" arcsize="7%" style="width:480pt;height:132pt;"><v:fill type="frame" src="' +
-    staticBackgroundUrl +
-    '" color="' +
-    BRAND.navy +
-    '" /><v:textbox inset="0,0,0,0"><![endif]-->' +
-    '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" height="176" style="width:640px;height:176px;border-collapse:collapse;">' +
-    '<tr><td width="129" height="176" align="left" valign="top" style="width:129px;height:176px;padding:0;vertical-align:top;">' +
+    ';border-radius:12px 0 0 12px;vertical-align:top;">' +
     '<a href="' +
     escapeHtml(websiteHref(data.website)) +
     '" style="display:block;text-decoration:none;">' +
@@ -243,7 +236,11 @@ function buildFullSignature(data) {
     ';font-size:0;line-height:0;">&nbsp;</td></tr>' +
     '<tr><td width="1" height="22" style="width:1px;height:22px;font-size:0;line-height:0;">&nbsp;</td></tr>' +
     '</table></td>' +
-    '<td width="290" height="176" valign="top" style="width:290px;height:176px;padding:0;vertical-align:top;">' +
+    '<td width="290" height="176" valign="top" bgcolor="' +
+    BRAND.navy +
+    '" style="width:290px;height:176px;padding:0;background-color:' +
+    BRAND.navy +
+    ';vertical-align:top;">' +
     '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;border-collapse:collapse;">' +
     '<tr><td style="padding:21px 14px 8px 22px;">' +
     '<table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100%;border-collapse:collapse;">' +
@@ -273,9 +270,17 @@ function buildFullSignature(data) {
     '<table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-top:12px;border-collapse:collapse;">' +
     contacts +
     "</table></td></tr></table></td>" +
-    '<td width="220" height="176" style="width:220px;height:176px;padding:0;font-size:0;line-height:0;">&nbsp;</td>' +
-    "</tr></table>" +
-    '<!--[if gte mso 9]></v:textbox></v:roundrect><![endif]-->' +
+    '<td width="220" height="176" valign="top" bgcolor="' +
+    BRAND.navy +
+    '" style="width:220px;height:176px;padding:0;background-color:' +
+    BRAND.navy +
+    ';font-size:0;line-height:0;vertical-align:top;">' +
+    '<!--[if mso]><img src="' +
+    staticArtworkUrl +
+    '" width="220" height="176" alt="" border="0" style="display:block;width:220px;height:176px;margin:0;border:0;outline:none;text-decoration:none;" /><![endif]-->' +
+    '<!--[if !mso]><!--><img src="' +
+    animatedArtworkUrl +
+    '" width="220" height="176" alt="" border="0" style="display:block;width:220px;height:176px;margin:0;border:0;border-radius:0 12px 12px 0;outline:none;text-decoration:none;" /><!--<![endif]-->' +
     "</td></tr></table>"
   );
 }
