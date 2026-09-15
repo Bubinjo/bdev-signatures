@@ -5,8 +5,9 @@ const ASSET_ROOT = "https://bubinjo.github.io/bdev-signatures/assets";
 const ORGANIZATION = {
   company: "B.DEV d.o.o.",
   website: "https://bubinjo.dev",
-  backgroundUrl: ASSET_ROOT + "/bdev-signature-background-v1.png?v=0.7.0",
-  logoOverlayUrl: ASSET_ROOT + "/bdev-signature-logo-overlay-v1.png?v=0.7.0"
+  animatedBackgroundUrl: ASSET_ROOT + "/bdev-signature-background-v2.gif?v=0.8.0",
+  staticBackgroundUrl: ASSET_ROOT + "/bdev-signature-background-v2.png?v=0.8.0",
+  logoOverlayUrl: ASSET_ROOT + "/bdev-signature-logo-overlay-v2.png?v=0.8.0"
 };
 
 const BRAND = {
@@ -198,23 +199,24 @@ function buildCompactSignature(data) {
 
 function buildFullSignature(data) {
   const contacts = buildContactRows(data);
-  const backgroundUrl = escapeHtml(ORGANIZATION.backgroundUrl);
+  const animatedBackgroundUrl = escapeHtml(ORGANIZATION.animatedBackgroundUrl);
+  const staticBackgroundUrl = escapeHtml(ORGANIZATION.staticBackgroundUrl);
 
   return (
-    '<table data-bdev-signature="full-banner-v6" role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" style="width:640px;max-width:100%;margin-top:16px;border-collapse:collapse;font-family:' +
+    '<table data-bdev-signature="full-banner-v7" role="presentation" border="0" cellspacing="0" cellpadding="0" width="640" style="width:640px;max-width:100%;margin-top:16px;border-collapse:collapse;font-family:' +
     FONT_STACK +
     ';">' +
     '<tr><td width="640" height="176" valign="top" background="' +
-    backgroundUrl +
+    animatedBackgroundUrl +
     '" bgcolor="' +
     BRAND.navy +
     '" style="width:640px;height:176px;padding:0;background-color:' +
     BRAND.navy +
     ';background-image:url(' +
-    backgroundUrl +
+    animatedBackgroundUrl +
     ');background-position:left top;background-repeat:no-repeat;background-size:640px 176px;border-radius:12px;overflow:hidden;vertical-align:top;">' +
     '<!--[if gte mso 9]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" arcsize="7%" style="width:480pt;height:132pt;"><v:fill type="frame" src="' +
-    backgroundUrl +
+    staticBackgroundUrl +
     '" color="' +
     BRAND.navy +
     '" /><v:textbox inset="0,0,0,0"><![endif]-->' +

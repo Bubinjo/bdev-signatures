@@ -26,8 +26,9 @@ test("builds the production Company Branding banner signature for new mail", () 
   assert.match(html, /Danijel Buba/);
   assert.match(html, /System Engineer/);
   assert.match(html, /B\.DEV d\.o\.o\./);
-  assert.match(html, /bdev-signature-background-v1\.png\?v=0\.7\.0/);
-  assert.match(html, /bdev-signature-logo-overlay-v1\.png\?v=0\.7\.0/);
+  assert.match(html, /bdev-signature-background-v2\.gif\?v=0\.8\.0/);
+  assert.match(html, /bdev-signature-background-v2\.png\?v=0\.8\.0/);
+  assert.match(html, /bdev-signature-logo-overlay-v2\.png\?v=0\.8\.0/);
   assert.match(html, /width="640"/);
   assert.match(html, /width="129" height="176"/);
   assert.match(html, /width="290" height="176"/);
@@ -50,7 +51,7 @@ test("builds the production Company Branding banner signature for new mail", () 
   assert.match(html, />M<\/td><td[^>]*>&#124;<\/td>/);
   assert.match(html, />E<\/td><td[^>]*>&#124;<\/td>/);
   assert.match(html, />W<\/td><td[^>]*>&#124;<\/td>/);
-  assert.match(html, /data-bdev-signature="full-banner-v6"/);
+  assert.match(html, /data-bdev-signature="full-banner-v7"/);
   assert.doesNotMatch(html, /IDEJE V REŠITVE/i);
   assert.doesNotMatch(html, /BUILD.*DEVELOP.*DELIVER/i);
   assert.doesNotMatch(html, /text-shadow/i);
@@ -58,13 +59,18 @@ test("builds the production Company Branding banner signature for new mail", () 
   assert.doesNotMatch(html, /position\s*:\s*absolute/i);
   assert.doesNotMatch(html, /<(script|svg)\b/i);
   assert.doesNotMatch(html, />B\.DEV<\/span>/);
-  assert.match(html, /background-image:url\(https:\/\/bubinjo\.github\.io\/bdev-signatures\/assets\/bdev-signature-background-v1\.png\?v=0\.7\.0\)/);
-  assert.match(html, /background="https:\/\/bubinjo\.github\.io\/bdev-signatures\/assets\/bdev-signature-background-v1\.png\?v=0\.7\.0"/);
+  assert.match(html, /background-image:url\(https:\/\/bubinjo\.github\.io\/bdev-signatures\/assets\/bdev-signature-background-v2\.gif\?v=0\.8\.0\)/);
+  assert.match(html, /background="https:\/\/bubinjo\.github\.io\/bdev-signatures\/assets\/bdev-signature-background-v2\.gif\?v=0\.8\.0"/);
   assert.match(html, /<v:roundrect\b/);
-  assert.match(html, /<v:fill type="frame" src="https:\/\/bubinjo\.github\.io\/bdev-signatures\/assets\/bdev-signature-background-v1\.png\?v=0\.7\.0"/);
+  assert.match(html, /<v:fill type="frame" src="https:\/\/bubinjo\.github\.io\/bdev-signatures\/assets\/bdev-signature-background-v2\.png\?v=0\.8\.0"/);
   assert.doesNotMatch(html, /bdev-signature-info-bg/i);
   assert.doesNotMatch(html, /bdev-signature-(identity|artwork|center-bridge|center-glow)/);
-  assert.equal((html.match(/bdev-signature-logo-overlay-v1/g) || []).length, 1);
+  assert.equal((html.match(/bdev-signature-logo-overlay-v2/g) || []).length, 1);
+
+  const employeeCell = html.match(/<td width="290"[^>]*>/)?.[0] || "";
+  assert.ok(employeeCell);
+  assert.doesNotMatch(employeeCell, /\bbgcolor=/i);
+  assert.doesNotMatch(employeeCell, /background(?:-color|-image)?\s*:/i);
 });
 
 test("builds a compact branded signature for replies", () => {
